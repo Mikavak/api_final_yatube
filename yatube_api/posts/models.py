@@ -40,6 +40,15 @@ class Comment(models.Model):
     
 
 class Follow(models.Model):
-    pass
-
-
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL,
+        related_name='user',
+        blank=True,
+        null=True)
+    following = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL,
+        related_name='following',
+        blank=True,
+        null=True)
