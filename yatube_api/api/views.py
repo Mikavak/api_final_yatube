@@ -1,5 +1,6 @@
-from posts.models import Post, Group
-from .serializers import PostSerializer, GroupSerializer
+from django.shortcuts import get_object_or_404
+from posts.models import Post, Group, Comment
+from .serializers import PostSerializer, GroupSerializer, CommentSerializer
 from rest_framework import permissions, viewsets
 from .permissions import IsOwnerOrReadOnly, ReadOnly
 from rest_framework.pagination import LimitOffsetPagination
@@ -27,6 +28,26 @@ class GroupList(viewsets.ReadOnlyModelViewSet):
     permission_classes = [
         IsOwnerOrReadOnly]
 
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            return (ReadOnly(),)
+        return super().get_permissions()
+
+
+class CommentList(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = [IsOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        post_id = self.kwargs.get("post_id")
+        get_object_or_404(Post, id=post_id)
+        serializer.save(author=self.request.user, post_id=post_id)
+
+    def get_queryset(self):
+        post_id = self.kwargs.get("post_id")
+        new_queryset = Comment.objects.filter(post=post_id)
+        return new_queryset
+    
     def get_permissions(self):
         if self.action == 'retrieve':
             return (ReadOnly(),)
