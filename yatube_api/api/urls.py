@@ -1,7 +1,7 @@
-from rest_framework.routers import SimpleRouter
-from .views import PostList, GroupList, CommentList, FollowList
 from django.urls import include, path
+from rest_framework.routers import SimpleRouter
 
+from .views import CommentList, FollowList, GroupList, PostList
 
 router_v1 = SimpleRouter()
 router_v1.register('v1/posts', PostList)
@@ -14,4 +14,4 @@ router_v1.register(
 
 urlpatterns = [
     path('', include(router_v1.urls))
-    ]
+]

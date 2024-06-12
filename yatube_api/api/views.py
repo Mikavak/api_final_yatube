@@ -1,10 +1,12 @@
 from django.shortcuts import get_object_or_404
-from posts.models import Post, Group, Comment, Follow
-from .serializers import PostSerializer, GroupSerializer, CommentSerializer, FollowSerializer
-from rest_framework import permissions, viewsets
-from .permissions import IsOwnerOrReadOnly, ReadOnly
+from rest_framework import filters, viewsets
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework import filters
+from rest_framework.response import Response
+
+from posts.models import Comment, Follow, Group, Post
+from .permissions import IsOwnerOrReadOnly, ReadOnly
+from .serializers import (
+    CommentSerializer, FollowSerializer, GroupSerializer, PostSerializer)
 
 
 class FollowList(viewsets.ModelViewSet):
@@ -12,14 +14,17 @@ class FollowList(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('following__username',)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-        
+    def retrieve(self, request, *args, **kwargs):
+        return Response(status=404)
+
     def get_queryset(self):
         user_id = self.request.user.id
         new_queryset = Follow.objects.filter(user=user_id)
         return new_queryset
-    
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 class PostList(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -62,7 +67,7 @@ class CommentList(viewsets.ModelViewSet):
         post_id = self.kwargs.get("post_id")
         new_queryset = Comment.objects.filter(post=post_id)
         return new_queryset
-    
+
     def get_permissions(self):
         if self.action == 'retrieve':
             return (ReadOnly(),)
