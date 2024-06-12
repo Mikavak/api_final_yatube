@@ -27,7 +27,6 @@ class FollowSerializer(serializers.ModelSerializer):
         return data
 
 
-
 class PostSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
 
