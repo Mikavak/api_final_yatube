@@ -1,14 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from .constant import TITLE_GROUP
+from .constant import TITLE_FIELD_LEN
 
 User = get_user_model()
 
 
 class Group(models.Model):
     title = models.CharField(
-        max_length=TITLE_GROUP,
+        max_length=TITLE_FIELD_LEN,
         verbose_name='Название категории')
     slug = models.SlugField(
         unique=True,
